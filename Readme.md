@@ -2,7 +2,7 @@
 
 This server is to support the [indoor locator](https://github.com/Indoor-Positioning/indoor-locator) android app.
 The client (android app) talks via a websocket - powered by [django channels](https://channels.readthedocs.io/en/stable/) - to the server
-in order to add Point of Interests, Finger Printed locations, and Fingerprints, and retrive the matched 
+in order to add Point of Interests, Finger Printed locations, and Fingerprints, and retrieve the matched 
 location from the server.
 
 ### Deploy
@@ -17,22 +17,22 @@ Database Schema:
 
 #### Tables Explanation
 
-* `Floor Plan`. Stores the floor plans. Must be added beforehand, by the django admin. The resource_name cooresponds to the drawable png that should reside
-in the adroid apk.
+* `Floor Plan`. Stores the floor plans. Must be added beforehand, by the django admin. The resource_name corresponds to the drawable png that should reside
+in the android apk.
 * `PointOfInterest`. Stores the POIs of the current floor plan. These can be paintings / statues on a museum, etc
 * `FingerPrintedLocation`. Stores the locations that are about to be fingerprinted.
 * `FingerPrint`. Stores the fingerprint of the various locations.
 
 _Note:_ There is a strange cycle dependency between the `PointOfInterest` and `FingerPrintLocation` table. The concept is that
-every PointOfInterest has an entry on the FingerPRintedLocation table (we need that in order to store the fingerprint of each POI), while
-at the same time we want each FingerPrintedLocation to be related with exactly one POI which will be either the closest one (if the FingerPRintedLocation is not a POI),
+every PointOfInterest has an entry on the FingerPrintedLocation table (we need that in order to store the fingerprint of each POI), while
+at the same time we want each FingerPrintedLocation to be related with exactly one POI which will be either the closest one (if the FingerPrintedLocation is not a POI),
 or the POI itself (if the FingerPrintedLocation is a POI (i.e isPoi = True)). I will come back to it and probably reconsider.
 
 ### Supported Commands
 
 1. `GET_FLOOR_PLANS`.
 
-This command is sent by the client so as to retrive the floor plans which are currently saved in the database.
+This command is sent by the client so as to retrieve the floor plans which are currently saved in the database.
 
 ```json
 {
@@ -114,13 +114,13 @@ This command is sent by the client to add a new location to the floor plan (user
 
 ```json
 { 
-  "command" : "ADD_LOCATION" 
+  "command" : "ADD_LOCATION", 
   "location" :
   {
         "floorPlanId" : "<floor_plan_id",
         "isPoi" : "False",
         "xCoord" : "<x_coordinate>",
-        "yCoord" : "<Y_coordinate>",
+        "yCoord" : "<Y_coordinate>"
   }
 }
 ```
@@ -133,7 +133,7 @@ The server responds with the newly added location:
         "relatedPoi" : "-1 ; Must be added later by the floor plan administrator",
         "isPoi" : "False",
         "xCoord" : "<x_coordinate>",
-        "yCoord" : "<Y_coordinate>",
+        "yCoord" : "<Y_coordinate>"
   }
 
 ```
@@ -151,7 +151,7 @@ A respective FingerPrintedLoc entry is added to the database (see the schema for
   {
         "floorPlanId" : "<floor_plan_id",
         "xCoord" : "<x_coordinate>",
-        "yCoord" : "<Y_coordinate>",
+        "yCoord" : "<Y_coordinate>"
   }
 }
 ```
@@ -164,7 +164,7 @@ The server responds with the newly added location:
         "name" : "<empty ; Must be added later by administrator",
         "relatedFingerPrintedLocId" : "The id of the respective FingerPrintedLocationId that was created along with this POI",
         "xCoord" : "<x_coordinate>",
-        "yCoord" : "<Y_coordinate>",
+        "yCoord" : "<Y_coordinate>"
   }
 
 ```
