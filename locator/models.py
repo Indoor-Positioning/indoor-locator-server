@@ -9,7 +9,7 @@ class FloorPlan(models.Model):
     resource_name = models.CharField(max_length=20)
 
     def __str__(self):
-        return "ID: {}, Name: {}".format(self.id, self.name)
+        return self.name
 
     def as_json(self):
         return dict(
@@ -86,7 +86,7 @@ class PointOfInterest(models.Model):
             yCoord=self.y_coord)
 
     def __str__(self):
-        return "ID: {},  X: {:.2f},   Y: {:.2f}".format(self.id, self.x_coord, self.y_coord)
+        return self.name
 
 
 class FingerPrint(models.Model):
