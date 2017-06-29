@@ -23,11 +23,6 @@ in the android apk.
 * `FingerPrintedLocation`. Stores the locations that are about to be fingerprinted.
 * `FingerPrint`. Stores the fingerprint of the various locations.
 
-_Note:_ There is a strange cycle dependency between the `PointOfInterest` and `FingerPrintLocation` table. The concept is that
-every PointOfInterest has an entry on the FingerPrintedLocation table (we need that in order to store the fingerprint of each POI), while
-at the same time we want each FingerPrintedLocation to be related with exactly one POI which will be either the closest one (if the FingerPrintedLocation is not a POI),
-or the POI itself (if the FingerPrintedLocation is a POI (i.e isPoi = True)). I will come back to it and probably reconsider.
-
 ### Supported Commands
 
 1. `GET_FLOOR_PLANS`.

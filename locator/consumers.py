@@ -19,16 +19,16 @@ def ws_receive(message):
             .filter(floor_plan=requested_floor_plan)]
     elif command == "GET_POIS":
         requested_floor_plan = message_json["floorPlanId"]
-        response = [location.as_json() for location in models.PointOfInterest.objects
-            .filter(floor_plan=requested_floor_plan)]
+        response = [location.as_poi_json() for location in models.FingerPrintedLocation.objects
+            .filter(floor_plan=requested_floor_plan).filter(is_poi=True)]
     elif command == "ADD_LOCATION":
         new_location = message_json["location"]
         added_loc = models.FingerPrintedLocation.add_from_json(new_location)
         response = added_loc.as_json()
     elif command == "ADD_POI":
         new_location = message_json["poi"]
-        added_poi = models.PointOfInterest.add_from_json(new_location)
-        response = added_poi.as_json()
+        added_poi = models.FingerPrintedLocation.add_poi_from_json(new_location)
+        response = added_poi.as_poi_json()
     elif command == "ADD_FINGERPRINTS":
         fingerprints = message_json["fingerPrintList"]
         models.FingerPrint.add_from_json(fingerprints)
@@ -55,11 +55,11 @@ def ws_receive(message):
             if related_fingerprint_loc.is_poi:
                 if new_distance < min_poi_distance:
                     min_poi_distance = new_distance
-                    closest_poi_id = related_fingerprint_loc.related_poi_id
+                    closest_poi_id = related_fingerprint_loc.id
         if closest_loc_id is not None:
             closest_loc = models.FingerPrintedLocation.objects.get(pk=closest_loc_id)
         if closest_poi_id is not None:
-            closest_poi = models.PointOfInterest.objects.get(pk=closest_poi_id) if closest_poi_id is not None else None
+            closest_poi = models.FingerPrintedLocation.objects.get(pk=closest_poi_id) if closest_poi_id is not None else None
         response = create_location_response_json(closest_loc, closest_poi, min_distance)
         print(response)
     if response is not None:
