@@ -13,7 +13,7 @@ location from the server.
 
 Database Schema:
 
-![Database Schema](db_diagram.png)
+![Database Schema](db_diagram_updated.png)
 
 #### Tables Explanation
 
