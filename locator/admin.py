@@ -37,6 +37,11 @@ class FingerPrintAdmin(admin.ModelAdmin):
                     obj.orientation_y, obj.magnetic_z, obj.wifi_rssi)
 
 
+# class UserLocation(admin.ModelAdmin):
+#     model = UserLocation
+#     list_display
+
+
 admin.site.register(FloorPlan, FloorPanAdmin)
 admin.site.register(PointOfInterest, PointOfInterestAdmin)
 admin.site.register(FingerPrintedLocation, FingerPrintedLocationAdmin)

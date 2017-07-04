@@ -1,6 +1,7 @@
 import json
 
 from django.db import models
+from django.conf import settings
 
 
 # Create your models here.
@@ -27,7 +28,7 @@ class FingerPrintedLocation(models.Model):
     y_coord = models.FloatField()
 
     def __str__(self):
-        return self.floor_plan
+        return  "ID: {} FLOOR_PLAN: {}".format(self.id, self.floor_plan.__str__())
 
     def as_json(self):
         return dict(
@@ -122,3 +123,13 @@ class FingerPrint(models.Model):
         fp.orientation_z = fingerprint["orientationZ"]
         fp.wifi_rssi = fingerprint["wifiRssi"]
         return fp
+
+
+class UserLocation(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    location = models.ForeignKey(FingerPrintedLocation)
+    modified = models.DateTimeField(auto_now=True, auto_now_add=False)
+    timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
