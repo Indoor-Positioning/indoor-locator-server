@@ -13,19 +13,31 @@ class FloorPanAdmin(admin.ModelAdmin):
 
 class PointOfInterestAdmin(admin.ModelAdmin):
     model = PointOfInterest
-    list_display = ('__str__', 'floor_plan' ,'id_with_coords', )
+    list_display = ('__str__', 'return_id', )
 
-    def id_with_coords(self, obj):
-        return "ID: {},  X: {:.2f},   Y: {:.2f}".format(obj.id, obj.x_coord, obj.y_coord)
+    def return_id(self, obj):
+        return "ID: {}".format(obj.id)
 
 
 class FingerPrintedLocationAdmin(admin.ModelAdmin):
     model = FingerPrintedLocation
-    list_display = ('__str__', 'floor_plan', 'related_poi', 'is_poi', )
+    list_display = ('__str__', 'is_poi', 'related_poi', )
+    list_filter = ('floor_plan', )
 
+
+class FingerPrintAdmin(admin.ModelAdmin):
+    model = FingerPrint
+    list_display = ('__str__', 'metrics_summary',)
+    list_filter = ('location__floor_plan', )
+
+
+    def metrics_summary(self, obj):
+        return "Magnetic field: ({:.2f}, {:.2f}, {:.2f}), Orientation: ({:.2f}, {:.2f}, {:.2f}), Rssi: {: .2f}"\
+                .format(obj.magnetic_x, obj.magnetic_y, obj.magnetic_z, obj.orientation_x,
+                    obj.orientation_y, obj.magnetic_z, obj.wifi_rssi)
 
 
 admin.site.register(FloorPlan, FloorPanAdmin)
 admin.site.register(PointOfInterest, PointOfInterestAdmin)
 admin.site.register(FingerPrintedLocation, FingerPrintedLocationAdmin)
-admin.site.register(FingerPrint)
+admin.site.register(FingerPrint, FingerPrintAdmin)

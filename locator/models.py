@@ -26,6 +26,9 @@ class FingerPrintedLocation(models.Model):
     x_coord = models.FloatField()
     y_coord = models.FloatField()
 
+    def __str__(self):
+        return self.floor_plan
+
     def as_json(self):
         return dict(
             id=self.id,
@@ -72,15 +75,13 @@ class FingerPrintedLocation(models.Model):
         related_loc.save()
         return related_loc
 
-    def __str__(self):
-        return self.name
 
 
 class PointOfInterest(models.Model):
     name = models.CharField(max_length=20)
 
     def __str__(self):
-        return "ID: {}".format(self.id)
+        return self.name
 
 
 class FingerPrint(models.Model):
@@ -92,6 +93,9 @@ class FingerPrint(models.Model):
     orientation_y = models.FloatField()
     orientation_z = models.FloatField()
     wifi_rssi = models.FloatField()
+
+    def __str__(self):
+        return self.location.floor_plan
 
     @classmethod
     def add_from_json(cls, fingerprints):
@@ -118,8 +122,3 @@ class FingerPrint(models.Model):
         fp.orientation_z = fingerprint["orientationZ"]
         fp.wifi_rssi = fingerprint["wifiRssi"]
         return fp
-
-    def __str__(self):
-        return "Magnetic field: ({:.2f}, {:.2f}, {:.2f}), Orientation: ({:.2f}, {:.2f}, {:.2f}), Rssi: {: .2f}"\
-            .format(self.magnetic_x, self.magnetic_y, self.magnetic_z, self.orientation_x,
-                    self.orientation_y, self.magnetic_z, self.wifi_rssi)
