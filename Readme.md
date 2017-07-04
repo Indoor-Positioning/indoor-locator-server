@@ -8,12 +8,12 @@ location from the server.
 ### Deploy
 
 * Install requirements stored in requirements.txt
-* Deploy local Redis server (should listen at port 6379)
+* Deploy local Redis server (should listen at port 6379). If docker is available: `docker pull redis` and then `docker run  -p 6379:6379 -d redis`
 * Run django server.
 
 Database Schema:
 
-![Database Schema](db_diagram.png)
+![Database Schema](db_diagram_updated.png)
 
 #### Tables Explanation
 
@@ -22,11 +22,6 @@ in the android apk.
 * `PointOfInterest`. Stores the POIs of the current floor plan. These can be paintings / statues on a museum, etc
 * `FingerPrintedLocation`. Stores the locations that are about to be fingerprinted.
 * `FingerPrint`. Stores the fingerprint of the various locations.
-
-_Note:_ There is a strange cycle dependency between the `PointOfInterest` and `FingerPrintLocation` table. The concept is that
-every PointOfInterest has an entry on the FingerPrintedLocation table (we need that in order to store the fingerprint of each POI), while
-at the same time we want each FingerPrintedLocation to be related with exactly one POI which will be either the closest one (if the FingerPrintedLocation is not a POI),
-or the POI itself (if the FingerPrintedLocation is a POI (i.e isPoi = True)). I will come back to it and probably reconsider.
 
 ### Supported Commands
 
@@ -171,5 +166,58 @@ The server responds with the newly added location:
 
 6. `ADD_FINGERPRINTS`
 
+This command is sent by the client to upload recorded fingerprints (snapshots of the magnetic field values, orientation info, and wifi Rssi)
+
+```json
+{ 
+  "command" : "ADD_FINGERPRINTS", 
+  "fingerPrintList" :
+  [
+    {
+        "fingerPrintedLocationId" : "<id_of_FingerPrintedLocation>",
+        "magneticX" : "<magnetic X value on X axis>",
+        "magneticY" : "<magnetic X value on Y axis>",
+        "magneticZ" : "<magnetic X value on Z axis>",
+        "orientationX" : "<orientation (in degrees) on X axis>",
+        "orientationY" : "<orientation (in degrees) on Y axis>",
+        "orientationZ" : "<orientation (in degrees) on Z axis>",
+        "wifiRssi" : "<rssi of the currently connected WLAN network (if enabled and connected)>"
+    }
+  ]
+}
+```
+The server does not respond on this command (it just stores the fingerprints). 
 
 7. `LOCATE`
+
+This command is sent by the client, along with the fingerprint of the client's current location,
+and asks server to provide the estimated location by comparing the fingerprint with the already
+stored fingerprints of the database.
+
+```json
+{ 
+  "command" : "LOCATE", 
+  "floorPlanId" : "<id_of_the_current_floor_plan>",
+  "fingerPrint" :
+    {
+        "magneticX" : "<magnetic X value on X axis>",
+        "magneticY" : "<magnetic X value on Y axis>",
+        "magneticZ" : "<magnetic X value on Z axis>",
+        "orientationX" : "<orientation (in degrees) on X axis>",
+        "orientationY" : "<orientation (in degrees) on Y axis>",
+        "orientationZ" : "<orientation (in degrees) on Z axis>",
+        "wifiRssi" : "<rssi of the currently connected WLAN network (if enabled and connected)>"
+    }
+}
+```
+The server then responds with the best matched FingerPrintedLocation:
+
+```json
+{
+  "fingerPrintDistance" : "<the distance between the given fingerprint and its best match>",
+  "closestFingerPrintedLocation" : "<the id of the matched fingerprint>",
+  "closestPoi" : "<the closest PointOfInterest>"
+}
+```
+ 
+ 

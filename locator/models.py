@@ -30,11 +30,22 @@ class FingerPrintedLocation(models.Model):
         return dict(
             id=self.id,
             floorPlanId=self.floor_plan_id,
-            relatedPoi=self.related_poi_id if self.related_poi is not None else -1,
+            relatedPoi=self.related_poi_id if self.is_poi else -1,
             isPoi=self.is_poi,
             xCoord=self.x_coord,
             yCoord=self.y_coord
         )
+
+    def as_poi_json(self):
+        if self.is_poi:
+            poi = PointOfInterest.objects.get(pk=self.related_poi_id)
+            return dict(
+                id=poi.id,
+                name=poi.name if poi.name is not None else "N/A",
+                floorPlanId=self.floor_plan_id,
+                relatedFingerPrintedLocId=self.id,
+                xCoord=self.x_coord,
+                yCoord=self.y_coord)
 
     @classmethod
     def add_from_json(cls, location):
@@ -46,47 +57,30 @@ class FingerPrintedLocation(models.Model):
         loc.save()
         return loc
 
+    @classmethod
+    def add_poi_from_json(cls, poi):
+        related_loc = FingerPrintedLocation()
+        related_loc.floor_plan_id = poi["floorPlanId"]
+        related_loc.is_poi = True
+        related_loc.x_coord = poi["xCoord"]
+        related_loc.y_coord = poi["yCoord"]
+        related_loc.save()
+
+        poi = PointOfInterest()
+        poi.save()
+        related_loc.related_poi_id = poi.id
+        related_loc.save()
+        return related_loc
+
     def __str__(self):
-        return "ID: {},  X: {:.2f},   Y: {:.2f}".format(self.id, self.x_coord, self.y_coord)
+        return self.name
 
 
 class PointOfInterest(models.Model):
     name = models.CharField(max_length=20)
-    floor_plan = models.ForeignKey('FloorPlan')
-    fingerprinted_loc = models.ForeignKey('FingerPrintedLocation')
-    x_coord = models.FloatField()
-    y_coord = models.FloatField()
-
-    @classmethod
-    def add_from_json(cls, poi_json):
-        related_loc = FingerPrintedLocation()
-        related_loc.floor_plan_id = poi_json["floorPlanId"]
-        related_loc.is_poi = True
-        related_loc.x_coord = poi_json["xCoord"]
-        related_loc.y_coord = poi_json["yCoord"]
-        related_loc.save()
-
-        poi = PointOfInterest()
-        poi.floor_plan_id = poi_json["floorPlanId"]
-        poi.fingerprinted_loc_id = related_loc.id
-        poi.x_coord = poi_json["xCoord"]
-        poi.y_coord = poi_json["yCoord"]
-        poi.save()
-        related_loc.related_poi_id = poi.id
-        related_loc.save()
-        return poi
-
-    def as_json(self):
-        return dict(
-            id=self.id,
-            name=self.name if self.name is not None else "N/A",
-            floorPlanId=self.floor_plan_id,
-            relatedFingerPrintedLocId=self.fingerprinted_loc_id,
-            xCoord=self.x_coord,
-            yCoord=self.y_coord)
 
     def __str__(self):
-        return self.name
+        return "ID: {}".format(self.id)
 
 
 class FingerPrint(models.Model):
