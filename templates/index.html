@@ -12,5 +12,35 @@
 
   <h1>Real Time Analytics</h1>
 
+  {% if user.is_authenticated %}
+  <table>
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Location</th>
+        <th>POI</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for location in old_locations %}
+      <tr>
+        <td>{{location.user}}</td>
+        <th>{{location.location}}</th>
+        {% if location.location.is_poi %}
+          <th>{{location.location.related_poi}}</th>
+        {% else %}
+          <th> - </th>
+        {% endif %}
+        <th>{{location.timestamp}}</th>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+
+
+
   </body>
 </html>

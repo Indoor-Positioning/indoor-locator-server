@@ -16,12 +16,16 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.views.generic import TemplateView
+from locator.models import UserLocation
 
 
 class HomePageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        # context['your variable'] = .......
+        if self.request.user.is_authenticated:
+            # TODO: filter only todays movements
+            context['old_locations'] = UserLocation.objects.filter(user=self.request.user)
+            print context['old_locations']
         return context
 
 
