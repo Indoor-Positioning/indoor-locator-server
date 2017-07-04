@@ -27,7 +27,6 @@ class HomePageView(TemplateView):
         # TODO: filter by Floor PLAN
         context['old_locations'] = UserLocation.objects.all()
         context['users'] = UserLocation.objects.values('user_id', 'user__username').distinct()
-        print context['users']
         return context
 
 

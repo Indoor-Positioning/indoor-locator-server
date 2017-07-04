@@ -4,6 +4,17 @@ import sys
 
 from indoor_locator.fingerprint_utils import compute_distance, create_location_response_json
 from .models import FloorPlan, FingerPrintedLocation, PointOfInterest, FingerPrint
+from channels import Group
+
+# Create a group of all analytics channels
+def analytics_receive(message):
+    Group('analytics').add(message.reply_channel)
+    message.reply_channel.send({
+        "text": dumps({
+            "status": "accepted"
+        })
+    })
+
 
 def ws_receive(message):
     message_json = loads(message["text"])
@@ -11,7 +22,14 @@ def ws_receive(message):
     command = message_json["command"]
     response = None
     if command == "GET_FLOOR_PLANS":
+        # Example: every new request produces a message to analytics Group
+        # TODO: is an example REMOVE it, not useful info
         response = [floor_plan.as_json() for floor_plan in FloorPlan.objects.all()]
+        Group('analytics').send({
+            'text': dumps({
+                'action': "GET_FLOOR_PLANS"
+            })
+        })
     elif command == "GET_LOCATIONS":
         requested_floor_plan = message_json["floorPlanId"]
         response = [location.as_json() for location in FingerPrintedLocation.objects.filter(floor_plan=requested_floor_plan)]
@@ -59,6 +77,7 @@ def ws_receive(message):
         if closest_poi_id is not None:
             closest_poi = models.FingerPrintedLocation.objects.get(pk=closest_poi_id) if closest_poi_id is not None else None
         response = create_location_response_json(closest_loc, closest_poi, min_distance)
+        #TODO: if you locate user inform  GROUP analytics (see example) + create a db Entry in UserLocation model
         print(response)
     if response is not None:
         message.reply_channel.send({

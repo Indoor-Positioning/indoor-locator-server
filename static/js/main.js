@@ -2,12 +2,13 @@
 if ("WebSocket" in window)
 {
 
-   // Let us open a web socket
-   var ws = new WebSocket("ws://localhost:8000/realtime");
+   // Museum Dashboard is connected to analytics channel
+   var ws = new WebSocket("ws://localhost:8000/analytics");
+   // No need to send a message CODE
    var msg = {
     // "command": "GET_FLOOR_PLANS",
     // "command": "GET_LOCATIONS",
-    "command": "GET_FLOOR_PLANS",
+    //"command": "GET_FLOOR_PLANS",
     // "floorPlanId" : 10
 
   };
@@ -22,6 +23,11 @@ if ("WebSocket" in window)
    {
       var received_msg = evt.data;
       console.log(evt.data);
+      /** TODO
+          1. GET USER ID
+          2. Find Table  if not create one
+          3. Add the new entry in the first row
+      **/
    };
 
 }
