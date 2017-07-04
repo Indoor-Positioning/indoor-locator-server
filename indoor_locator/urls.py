@@ -22,10 +22,12 @@ from locator.models import UserLocation
 class HomePageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomePageView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            # TODO: filter only todays movements
-            context['old_locations'] = UserLocation.objects.filter(user=self.request.user)
-            print context['old_locations']
+        # TODO: Needs Optimization
+        # TODO: Display only todays locations
+        # TODO: filter by Floor PLAN
+        context['old_locations'] = UserLocation.objects.all()
+        context['users'] = UserLocation.objects.values('user_id', 'user__username').distinct()
+        print context['users']
         return context
 
 

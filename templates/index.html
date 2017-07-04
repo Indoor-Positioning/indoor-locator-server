@@ -12,8 +12,9 @@
 
   <h1>Real Time Analytics</h1>
 
-  {% if user.is_authenticated %}
-  <table>
+  {% for user in users %}
+  <h2>User: {{user.user__username}}</h2>
+  <table id="{{user.user_id}}">
     <thead>
       <tr>
         <th>User</th>
@@ -24,20 +25,23 @@
     </thead>
     <tbody>
       {% for location in old_locations %}
-      <tr>
-        <td>{{location.user}}</td>
-        <th>{{location.location}}</th>
-        {% if location.location.is_poi %}
-          <th>{{location.location.related_poi}}</th>
-        {% else %}
-          <th> - </th>
+        {% if location.user.id == user.user_id %}
+        <tr>
+          <td>{{location.user}}</td>
+          <th>{{location.location}}</th>
+          {% if location.location.is_poi %}
+            <th>{{location.location.related_poi}}</th>
+          {% else %}
+            <th> - </th>
+          {% endif %}
+          <th>{{location.timestamp}}</th>
+        </tr>
         {% endif %}
-        <th>{{location.timestamp}}</th>
-      </tr>
       {% endfor %}
     </tbody>
   </table>
-  {% endif %}
+
+  {% endfor %}
 
 
 
