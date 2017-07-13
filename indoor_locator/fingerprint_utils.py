@@ -29,6 +29,9 @@ def compute_distance(fp1, fp2):
 
 
 def create_location_response_json(fingerprint_loc, poi, distance):
+    # TODO: If it is a POI
+    #       and has a creator
+    #       include in the response Creator attrs (at least id)
     if not fingerprint_loc.is_poi and poi is not None:
         closest_poi = poi.related_poi.id
     else:
