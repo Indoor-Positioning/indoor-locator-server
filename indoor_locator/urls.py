@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from locator.models import UserLocation
-
+from locator.views import PointsOfInterestSuggestionView
 
 class HomePageView(TemplateView):
     def get_context_data(self, **kwargs):
@@ -34,4 +34,5 @@ class HomePageView(TemplateView):
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', HomePageView.as_view(template_name="index.html"), name="homepage"),
+    url(r'^suggestions/$', PointsOfInterestSuggestionView.as_view(), name="suggestions"),
 ]
