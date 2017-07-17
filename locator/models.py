@@ -105,7 +105,7 @@ class FingerPrint(models.Model):
     wifi_rssi = models.FloatField()
 
     def __str__(self):
-        return self.location.floor_plan
+        return self.location.floor_plan.__str__()
 
     @classmethod
     def add_from_json(cls, fingerprints):
