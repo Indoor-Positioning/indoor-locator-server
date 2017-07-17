@@ -35,7 +35,7 @@ def ws_receive(message):
         response = [location.as_json() for location in FingerPrintedLocation.objects.filter(floor_plan=requested_floor_plan)]
     elif command == "GET_POIS":
         requested_floor_plan = message_json["floorPlanId"]
-        response = [location.as_poi_json() for location in models.FingerPrintedLocation.objects
+        response = [location.as_poi_json() for location in FingerPrintedLocation.objects
             .filter(floor_plan=requested_floor_plan).filter(is_poi=True)]
     elif command == "ADD_LOCATION":
         new_location = message_json["location"]
@@ -43,7 +43,7 @@ def ws_receive(message):
         response = added_loc.as_json()
     elif command == "ADD_POI":
         new_location = message_json["poi"]
-        added_poi = models.FingerPrintedLocation.add_poi_from_json(new_location)
+        added_poi = FingerPrintedLocation.add_poi_from_json(new_location)
         response = added_poi.as_poi_json()
     elif command == "ADD_FINGERPRINTS":
         fingerprints = message_json["fingerPrintList"]
@@ -75,7 +75,7 @@ def ws_receive(message):
         if closest_loc_id is not None:
             closest_loc = FingerPrintedLocation.objects.get(pk=closest_loc_id)
         if closest_poi_id is not None:
-            closest_poi = models.FingerPrintedLocation.objects.get(pk=closest_poi_id) if closest_poi_id is not None else None
+            closest_poi = FingerPrintedLocation.objects.get(pk=closest_poi_id) if closest_poi_id is not None else None
         response = create_location_response_json(closest_loc, closest_poi, min_distance)
         #TODO: if you locate user inform  GROUP analytics (see example) + create a db Entry in UserLocation model
         print(response)

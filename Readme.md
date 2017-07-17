@@ -221,3 +221,6 @@ The server then responds with the best matched FingerPrintedLocation:
 ```
  
  
+TODO:
+
+Remove 20 chars limit on django model text fields.
