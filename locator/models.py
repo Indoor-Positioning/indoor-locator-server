@@ -78,15 +78,15 @@ class FingerPrintedLocation(models.Model):
 
 
 class Creator(models.Model):
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
+    first_name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
 
     def __str__(self):
         return self.first_name  + ' ' + self.last_name
 
 
 class PointOfInterest(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=60)
     image = models.ImageField(upload_to='pointOfInterest/', blank=True)
     creator = models.ForeignKey(Creator, null=True)
 

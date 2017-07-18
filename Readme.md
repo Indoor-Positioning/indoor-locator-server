@@ -2,7 +2,7 @@
 
 This server is to support the [indoor locator](https://github.com/Indoor-Positioning/indoor-locator) android app.
 The client (android app) talks via a websocket - powered by [django channels](https://channels.readthedocs.io/en/stable/) - to the server
-in order to add Point of Interests, Finger Printed locations, and Fingerprints, and retrieve the matched 
+in order to add Point of Interests, Finger Printed locations, and Fingerprints, and retrieve the matched
 location from the server.
 
 ### Deploy
@@ -31,7 +31,7 @@ This command is sent by the client so as to retrieve the floor plans which are c
 
 ```json
 {
-  "command" : "GET_FLOOR_PLANS" 
+  "command" : "GET_FLOOR_PLANS"
 }
 ```
 
@@ -53,8 +53,8 @@ The server responds with a json of the following form:
 This command is sent by the client to retrieve the locations which are fingerprinted inside the requested floorPlan
 
 ```json
-{ 
-  "command" : "GET_LOCATIONS", 
+{
+  "command" : "GET_LOCATIONS",
   "floorPlanId" : "<floor_plan_id>"
 }
 ```
@@ -81,8 +81,8 @@ The server responds with the saved locations in the database:
 This command is sent by the client to retrieve the locations which are fingerprinted inside the requested floorPlan
 
 ```json
-{ 
-  "command" : "GET_POIS", 
+{
+  "command" : "GET_POIS",
   "floorPlanId" : "<floor_plan_id>"
 }
 ```
@@ -108,8 +108,8 @@ The server responds with the saved Points of Interest in the database:
 This command is sent by the client to add a new location to the floor plan (user taps on the floor plan image, then coordinates are captured)
 
 ```json
-{ 
-  "command" : "ADD_LOCATION", 
+{
+  "command" : "ADD_LOCATION",
   "location" :
   {
         "floorPlanId" : "<floor_plan_id",
@@ -140,8 +140,8 @@ This command is sent by the client to add a new POI to the floor plan (user long
 A respective FingerPrintedLoc entry is added to the database (see the schema for more details).
 
 ```json
-{ 
-  "command" : "ADD_POI", 
+{
+  "command" : "ADD_POI",
   "poi" :
   {
         "floorPlanId" : "<floor_plan_id",
@@ -169,8 +169,8 @@ The server responds with the newly added location:
 This command is sent by the client to upload recorded fingerprints (snapshots of the magnetic field values, orientation info, and wifi Rssi)
 
 ```json
-{ 
-  "command" : "ADD_FINGERPRINTS", 
+{
+  "command" : "ADD_FINGERPRINTS",
   "fingerPrintList" :
   [
     {
@@ -186,7 +186,7 @@ This command is sent by the client to upload recorded fingerprints (snapshots of
   ]
 }
 ```
-The server does not respond on this command (it just stores the fingerprints). 
+The server does not respond on this command (it just stores the fingerprints).
 
 7. `LOCATE`
 
@@ -195,8 +195,8 @@ and asks server to provide the estimated location by comparing the fingerprint w
 stored fingerprints of the database.
 
 ```json
-{ 
-  "command" : "LOCATE", 
+{
+  "command" : "LOCATE",
   "floorPlanId" : "<id_of_the_current_floor_plan>",
   "fingerPrint" :
     {
@@ -219,8 +219,3 @@ The server then responds with the best matched FingerPrintedLocation:
   "closestPoi" : "<the closest PointOfInterest>"
 }
 ```
- 
- 
-TODO:
-
-Remove 20 chars limit on django model text fields.
