@@ -1,3 +1,6 @@
+ORIENTATION_WEIGHT = 0.15
+
+
 def compute_magnetic_distance(fp1, fp2):
     distance = 0
     distance += abs(fp1.magnetic_x - fp2.magnetic_x)
@@ -8,9 +11,9 @@ def compute_magnetic_distance(fp1, fp2):
 
 def compute_orientation_distance(fp1, fp2):
     distance = 0
-    distance += 0.2 * abs(fp1.orientation_x - fp2.orientation_x)
-    distance += 0.2 * abs(fp1.orientation_y - fp2.orientation_y)
-    distance += 0.2 * abs(fp1.orientation_z - fp2.orientation_z)
+    distance += ORIENTATION_WEIGHT * abs(fp1.orientation_x - fp2.orientation_x)
+    distance += ORIENTATION_WEIGHT * abs(fp1.orientation_y - fp2.orientation_y)
+    distance += ORIENTATION_WEIGHT * abs(fp1.orientation_z - fp2.orientation_z)
     return distance
 
 
