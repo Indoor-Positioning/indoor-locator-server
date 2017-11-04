@@ -22,8 +22,13 @@ in the android apk.
 * `PointOfInterest`. Stores the POIs of the current floor plan. These can be paintings / statues on a museum, etc
 * `FingerPrintedLocation`. Stores the locations that are about to be fingerprinted.
 * `FingerPrint`. Stores the fingerprint of the various locations.
+* `Creators`. (Work in Progress)  This table is about to store the creators of the "PointOfInterest" (e.g the paintings in a museum).
+* `UserLocations`. (Work in Progress) This table is about to store the locations where the users are located. Something like a location timeline.
 
 ### Supported Commands
+
+Django models are serialized - deserialized to the jSon commands below through the websocket. In order to add a new command, update `ws_receive` method 
+of [consumers.py](locator/consumers.py#L19) and add the logic to serialize - deserialize  the django model (in the class of the model).
 
 1. `GET_FLOOR_PLANS`.
 
@@ -219,3 +224,33 @@ The server then responds with the best matched FingerPrintedLocation:
   "closestPoi" : "<the closest PointOfInterest>"
 }
 ```
+
+### Locating the User
+
+The `FingerPrint` table stores the recorded fingerprints - which where added to the server via the `ADD_FINGERPRINT` command. 
+In order to locate the user we want to match the fingerprint (from the `LOCATE` command) with the fingerprints that are present in 
+the database. The closest fingerprint (and its respective location - that it was recorded from) is assumed to be the user location.
+
+Each fingerprint has 3 values that correspond to the 3 coordinates of the magnetic field, 3 values that correspond to the orientation of the
+mobile and, optionally, the wifiRssi of the connected WLAN.
+
+We compute the distance by simply substracting every coordinate from its counterpart, and summing the absolute values of these differences.
+This is ofc a very basic estimation of the distance, and more sophisticated methods should be used (e.g Clustering Algorithms, nearest neighbors etc).
+
+Each metric has a weight. For example, the orientation sensor is quite noisy so we try to minimize its effect via this weight. See 
+[fingerprint_utils.py](indoor_locator/fingerprint_utils.py) for more details.
+
+As soon as the closest fingerprint is found, we respond to the client with the id and the distance of the closest fingerprint. It is up to the
+client to choose if this distance is close enough to assume a match against the current location of the mobile. A client may for example get 
+a response with a distance that is considered far (e.g above a configured threshold) to assume a location match - in that case the user could not be located.
+
+
+### Future work - Needs improvement
+
+* Use a proper distance estimation algorithm and / or some Clustering - Nearest Neighbor techniques.
+* Add "Creator" info for each Point Of Interest. Then we could recommend POIs from the same "Creator" when we locate a user in a POI
+* Add info about user past locations (add entries to the `UserLocation` table).
+* Add "Group Notifications" (utilizing group django channels) for events like user "log in " (first location of the user), location updates.
+* Use some noise reduction techniques (e.g Kalman Filtering) to deal with the noisy measurements that come from the mobile's sensors?
+
+Various TODOs have been added to the respective source files that capture the above reccomendations.

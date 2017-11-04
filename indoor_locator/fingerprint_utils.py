@@ -1,6 +1,8 @@
+# TODO: this weight is based on trial and error. Subject to reconsideration
 ORIENTATION_WEIGHT = 0.15
 
 
+# TODO: This way of estimating the distance is a fast, possibly not accurate estimation of it. Better use smthng better.
 def compute_magnetic_distance(fp1, fp2):
     distance = 0
     distance += abs(fp1.magnetic_x - fp2.magnetic_x)
